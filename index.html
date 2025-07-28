@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Daily Nutrient Intake Calculator</title>
+        <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .meal-section {
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .meal-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .meal-header::before {
+            content: "🍽️";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        th {
+            background: linear-gradient(135deg, #ecf0f1, #d5dbdb);
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .ingredient-name {
+            text-align: left;
+            font-weight: 600;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+        .serving-input {
+            width: 70px;
+            padding: 6px;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .serving-input:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .total-row {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            font-weight: bold;
+        }
+        .rda-row {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            font-weight: bold;
+        }
+        .percentage-row {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            font-weight: bold;
+        }
+        .summary-table {
+            margin-top: 40px;
+        }
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .adequate { 
+            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .deficient { 
+            background: linear-gradient(135deg, #f8d7da, #f1b0b7); 
+            color: #721c24;
+            border: 1px solid #f1b0b7;
+        }
+        .excess { 
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7); 
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .meal-total {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+            font-weight: bold;
+        }
+        .nutrient-value {
+            transition: all 0.3s ease;
+        }
+        .nutrient-value:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🥗 Daily Nutrient Intake Calculator</h1>
+
+            <div id="meals-container"></div>
+
+            <div class="summary-table">
+                <table>
+                    <thead>
+                        <tr class="total-row">
+                            <th>Summary</th>
+                            <th>Energy (kcal)</th>
+                            <th>Protein (g)</th>
+                            <th>Fat (g)</th>
+                            <th>Calcium (mg)</th>
+                            <th>Iron (mg)</th>
+                            <th>Vit-A (μg)</th>
+                            <th>Thiamine (mg)</th>
+                            <th>Riboflavin (mg)</th>
+                            <th>Niacin (mg)</th>
+                            <th>Vit-C (mg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="total-row">
+                            <td>Total Intake</td>
+                            <td id="total-energy">0</td>
+                            <td id="total-protein">0</td>
+                            <td id="total-fat">0</td>
+                            <td id="total-calcium">0</td>
+                            <td id="total-iron">0</td>
+                            <td id="total-vita">0</td>
+                            <td id="total-thiamine">0</td>
+                            <td id="total-riboflavin">0</td>
+                            <td id="total-niacin">0</td>
+                            <td id="total-vitc">0</td>
+                        </tr>
+                        <tr class="rda-row">
+                            <td>RDA</td>
+                            <td>1660</td>
+                            <td>46</td>
+                            <td>-</td>
+                            <td>1000</td>
+                            <td>29</td>
+                            <td>840</td>
+                            <td>1.4</td>
+                            <td>1.9</td>
+                            <td>11</td>
+                            <td>67</td>
+                        </tr>
+                        <tr class="percentage-row">
+                            <td>% of RDA</td>
+                            <td id="percent-energy">0%</td>
+                            <td id="percent-protein">0%</td>
+                            <td id="percent-fat">-</td>
+                            <td id="percent-calcium">0%</td>
+                            <td id="percent-iron">0%</td>
+                            <td id="percent-vita">0%</td>
+                            <td id="percent-thiamine">0%</td>
+                            <td id="percent-riboflavin">0%</td>
+                            <td id="percent-niacin">0%</td>
+                            <td id="percent-vitc">0%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status</strong></td>
+                            <td id="status-energy" class="status">-</td>
+                            <td id="status-protein" class="status">-</td>
+                            <td id="status-fat" class="status">-</td>
+                            <td id="status-calcium" class="status">-</td>
+                            <td id="status-iron" class="status">-</td>
+                            <td id="status-vita" class="status">-</td>
+                            <td id="status-thiamine" class="status">-</td>
+                            <td id="status-riboflavin" class="status">-</td>
+                            <td id="status-niacin" class="status">-</td>
+                            <td id="status-vitc" class="status">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script>
+        const rdaValues = {
+            energy: 1660,
+            protein: 46,
+            fat: null,
+            calcium: 1000,
+            iron: 29,
+            vita: 840,
+            thiamine: 1.4,
+            riboflavin: 1.9,
+            niacin: 11,
+            vitc: 67
+        };
+
+        // Complete nutrient data with original values per 100g/100ml
+        const originalNutrientData = {
+            "Almond": { energy: 563, protein: 18.6, fat: 50.6, calcium: 234, iron: 4.6, vita: 0, thiamine: 0.24, riboflavin: 1.05, niacin: 3.9, vitc: 0 },
+            "Milk": { energy: 67, protein: 3.2, fat: 4.1, calcium: 120, iron: 0.2, vita: 53, thiamine: 0.05, riboflavin: 0.19, niacin: 0.1, vitc: 2 },
+            "Sugar": { energy: 398, protein: 0.02, fat: 0, calcium: 12, iron: 0.6, vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0 },
+            "B-rice": { energy: 346, protein: 6.4, fat: 0.4, calcium: 9, iron: 1.1, vita: 0, thiamine: 0.21, riboflavin: 0.05, niacin: 3.38, vitc: 0 },
+            "Bengal Gram": { energy: 347, protein: 24, fat: 1.4, calcium: 154, iron: 3.8, vita: 9.5, thiamine: 0.42, riboflavin: 0.2, niacin: 42, vitc: 0 },
+            "Red Gram": { energy: 116, protein: 22.3, fat: 1.7, calcium: 57, iron: 1.1, vita: 33, thiamine: 0.45, riboflavin: 0.19, niacin: 2.9, vitc: 0 },
+            "Carrot": { energy: 48, protein: 0.9, fat: 0.2, calcium: 80, iron: 1.03, vita: 1890, thiamine: 0.04, riboflavin: 0.02, niacin: 0.6, vitc: 3 },
+            "Chow Chow": { energy: 27, protein: 0.7, fat: 0.1, calcium: 140, iron: 0.6, vita: 0, thiamine: 0, riboflavin: 0.04, niacin: 0.4, vitc: 4 },
+            "Tomato": { energy: 23, protein: 1.9, fat: 0.1, calcium: 20, iron: 0.2, vita: 87.75, thiamine: 0.19, riboflavin: 0.06, niacin: 0.4, vitc: 27 },
+            "Oil": { energy: 900, protein: 0, fat: 100, calcium: 0, iron: 0, vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0 },
+            "Onion": { energy: 50, protein: 1.2, fat: 0.1, calcium: 46.9, iron: 0.6, vita: 0, thiamine: 0.08, riboflavin: 0.1, niacin: 0.4, vitc: 10.8 },
+            "Grapes": { energy: 71, protein: 0.5, fat: 0.41, calcium: 20, iron: 0.52, vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 1 },
+            "Pomegranate": { energy: 65, protein: 1.6, fat: 0.1, calcium: 10, iron: 1.79, vita: 0, thiamine: 0.08, riboflavin: 0.1, niacin: 0.3, vitc: 16 },
+            "Papaya": { energy: 32, protein: 0.6, fat: 0.1, calcium: 16.65, iron: 0.5, vita: 166.5, thiamine: 0.04, riboflavin: 0.25, niacin: 0.2, vitc: 57 },
+            "Watermelon": { energy: 16, protein: 0.2, fat: 0.2, calcium: 11, iron: 7.9, vita: 0, thiamine: 0.02, riboflavin: 0.04, niacin: 0.1067, vitc: 1 },
+            "Beans": { energy: 158, protein: 7.4, fat: 1, calcium: 50, iron: 2.6, vita: 8.5, thiamine: 0.34, riboflavin: 0.19, niacin: 0, vitc: 28 },
+            "Potato": { energy: 97, protein: 1.6, fat: 0.1, calcium: 10, iron: 0.48, vita: 0.025, thiamine: 0.1, riboflavin: 0.01, niacin: 1.2, vitc: 17 },
+            "Cauliflower": { energy: 30, protein: 2.6, fat: 0.4, calcium: 33, iron: 1.23, vita: 7.5, thiamine: 0.04, riboflavin: 0.1, niacin: 1, vitc: 56 },
+            "Egg": { energy: 173, protein: 13.3, fat: 13.3, calcium: 60, iron: 2.1, vita: 4, thiamine: 0.1, riboflavin: 0.4, niacin: 0.12, vitc: 0 },
+            "Cucumber": { energy: 13, protein: 0.4, fat: 0.1, calcium: 10, iron: 0.6, vita: 0, thiamine: 0.03, riboflavin: 0, niacin: 20, vitc: 7 },
+            "Curd": { energy: 60, protein: 3.1, fat: 4, calcium: 149, iron: 0.2, vita: 31, thiamine: 0.05, riboflavin: 0.16, niacin: 0.1, vitc: 1 },
+            "Mango": { energy: 74, protein: 0.6, fat: 0.4, calcium: 14, iron: 1.3, vita: 685.75, thiamine: 0.08, riboflavin: 0.09, niacin: 0.9, vitc: 16 },
+            "Wheat": { energy: 261, protein: 12.1, fat: 1.7, calcium: 48, iron: 4.9, vita: 7.25, thiamine: 0.99, riboflavin: 0.17, niacin: 4.3, vitc: 0 },
+            "Beetroot": { energy: 43, protein: 1.7, fat: 0.1, calcium: 18.3, iron: 1.19, vita: 0, thiamine: 0.04, riboflavin: 0.09, niacin: 0.4, vitc: 10 },
+            "Paneer": { energy: 265, protein: 18.3, fat: 20.8, calcium: 208, iron: 0, vita: 27.5, thiamine: 0.07, riboflavin: 0.02, niacin: 0, vitc: 3 },
+            "Banana": { energy: 116, protein: 1.2, fat: 0.3, calcium: 17, iron: 0.36, vita: 19.5, thiamine: 0.05, riboflavin: 0.075, niacin: 0.5, vitc: 7 }
+        };
+
+        const nutrientData = {
+            "Early Morning": {
+                "Almond": { amount: 15 },
+                "Milk": { amount: 120 },
+                "Sugar": { amount: 4 }
+            },
+            "Breakfast": {
+                "B-rice": { amount: 45 },
+                "Bengal Gram": { amount: 18 },
+                "Red Gram": { amount: 12 },
+                "Carrot": { amount: 8 },
+                "Chow Chow": { amount: 6 },
+                "Tomato": { amount: 8 },
+                "Oil": { amount: 3 },
+                "Onion": { amount: 4 }
+            },
+            "Mid-Morning": {
+                "Grapes": { amount: 20 },
+                "Pomegranate": { amount: 20 },
+                "Papaya": { amount: 25 },
+                "Watermelon": { amount: 12 }
+            },
+            "Lunch": {
+                "B-rice": { amount: 80 },
+                "Carrot": { amount: 30 },
+                "Beans": { amount: 25 },
+                "Potato": { amount: 40 },
+                "Cauliflower": { amount: 35 },
+                "Oil": { amount: 8 },
+                "Egg": { amount: 60 },
+                "Cucumber": { amount: 50 },
+                "Curd": { amount: 80 }
+            },
+            "Evening": {
+                "Mango": { amount: 80 },
+                "Milk": { amount: 150 },
+                "Sugar": { amount: 4 }
+            },
+            "Dinner": {
+                "Wheat": { amount: 80 },
+                "Beetroot": { amount: 60 },
+                "Oil": { amount: 4 },
+                "Paneer": { amount: 60 },
+                "Onion": { amount: 12 },
+                "Tomato": { amount: 25 },
+                "Oil": { amount: 4 }
+            },
+            "Bed Time": {
+                "Banana": { amount: 80 },
+                "Milk": { amount: 120 },
+                "Sugar": { amount: 4 }
+            }
+        };
+
+        function calculateNutrients(ingredient, amount) {
+            const baseData = originalNutrientData[ingredient];
+            if (!baseData) return {};
+            
+            const ratio = amount / 100; // Convert to per 100g ratio
+            return {
+                energy: (baseData.energy * ratio).toFixed(2),
+                protein: (baseData.protein * ratio).toFixed(3),
+                fat: (baseData.fat * ratio).toFixed(3),
+                calcium: (baseData.calcium * ratio).toFixed(2),
+                iron: (baseData.iron * ratio).toFixed(3),
+                vita: (baseData.vita * ratio).toFixed(2),
+                thiamine: (baseData.thiamine * ratio).toFixed(4),
+                riboflavin: (baseData.riboflavin * ratio).toFixed(4),
+                niacin: (baseData.niacin * ratio).toFixed(3),
+                vitc: (baseData.vitc * ratio).toFixed(2)
+            };
+        }
+
+        function createMealTable(mealName, ingredients) {
+            const section = document.createElement('div');
+            section.className = 'meal-section';
+            section.setAttribute('data-meal', mealName); // Add data attribute for easier selection
+            
+            const header = document.createElement('div');
+            header.className = 'meal-header';
+            header.textContent = mealName;
+            
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Ingredient</th>
+                        <th>Amount (g/ml)</th>
+                        <th>Energy (kcal)</th>
+                        <th>Protein (g)</th>
+                        <th>Fat (g)</th>
+                        <th>Calcium (mg)</th>
+                        <th>Iron (mg)</th>
+                        <th>Vit-A (μg)</th>
+                        <th>Thiamine (mg)</th>
+                        <th>Riboflavin (mg)</th>
+                        <th>Niacin (mg)</th>
+                        <th>Vit-C (mg)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+            
+            const tbody = table.querySelector('tbody');
+            
+            let mealTotals = {
+                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0, 
+                vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
+            };
+            
+            Object.entries(ingredients).forEach(([ingredient, data]) => {
+                const nutrients = calculateNutrients(ingredient, data.amount);
+                
+                // Add to meal totals
+                Object.keys(mealTotals).forEach(key => {
+                    mealTotals[key] += parseFloat(nutrients[key] || 0);
+                });
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="ingredient-name">${ingredient}</td>
+                    <td><input type="number" class="serving-input" value="${data.amount}" data-ingredient="${ingredient}" data-meal="${mealName}" step="0.1" min="0"></td>
+                    <td class="nutrient-value energy">${nutrients.energy}</td>
+                    <td class="nutrient-value protein">${nutrients.protein}</td>
+                    <td class="nutrient-value fat">${nutrients.fat}</td>
+                    <td class="nutrient-value calcium">${nutrients.calcium}</td>
+                    <td class="nutrient-value iron">${nutrients.iron}</td>
+                    <td class="nutrient-value vita">${nutrients.vita}</td>
+                    <td class="nutrient-value thiamine">${nutrients.thiamine}</td>
+                    <td class="nutrient-value riboflavin">${nutrients.riboflavin}</td>
+                    <td class="nutrient-value niacin">${nutrients.niacin}</td>
+                    <td class="nutrient-value vitc">${nutrients.vitc}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Add meal total row
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'meal-total';
+            totalRow.innerHTML = `
+                <td><strong>${mealName} Total</strong></td>
+                <td>-</td>
+                <td><strong>${mealTotals.energy.toFixed(2)}</strong></td>
+                <td><strong>${mealTotals.protein.toFixed(3)}</strong></td>
+                <td><strong>${mealTotals.fat.toFixed(3)}</strong></td>
+                <td><strong>${mealTotals.calcium.toFixed(2)}</strong></td>
+                <td><strong>${mealTotals.iron.toFixed(3)}</strong></td>
+                <td><strong>${mealTotals.vita.toFixed(2)}</strong></td>
+                <td><strong>${mealTotals.thiamine.toFixed(4)}</strong></td>
+                <td><strong>${mealTotals.riboflavin.toFixed(4)}</strong></td>
+                <td><strong>${mealTotals.niacin.toFixed(3)}</strong></td>
+                <td><strong>${mealTotals.vitc.toFixed(2)}</strong></td>
+            `;
+            tbody.appendChild(totalRow);
+            
+            section.appendChild(header);
+            section.appendChild(table);
+            return section;
+        }
+
+        function updateNutrientValues(ingredient, mealName, newAmount) {
+            nutrientData[mealName][ingredient].amount = parseFloat(newAmount);
+            const nutrients = calculateNutrients(ingredient, newAmount);
+            
+            // Find and update the row
+            // The previous querySelectorAll was too broad, now target specifically within the meal section
+            const mealSection = document.querySelector(`[data-meal="${mealName}"]`);
+            const input = mealSection.querySelector(`input[data-ingredient="${ingredient}"]`);
+            if (input) {
+                const row = input.closest('tr');
+                const cells = row.querySelectorAll('.nutrient-value');
+                cells[0].textContent = nutrients.energy;
+                cells[1].textContent = nutrients.protein;
+                cells[2].textContent = nutrients.fat;
+                cells[3].textContent = nutrients.calcium;
+                cells[4].textContent = nutrients.iron;
+                cells[5].textContent = nutrients.vita;
+                cells[6].textContent = nutrients.thiamine;
+                cells[7].textContent = nutrients.riboflavin;
+                cells[8].textContent = nutrients.niacin;
+                cells[9].textContent = nutrients.vitc;
+            }
+            
+            updateMealTotal(mealName);
+            updateTotals();
+        }
+
+        function updateMealTotal(mealName) {
+            const ingredients = nutrientData[mealName];
+            let mealTotals = {
+                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0, 
+                vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
+            };
+            
+            Object.entries(ingredients).forEach(([ingredient, data]) => {
+                const nutrients = calculateNutrients(ingredient, data.amount);
+                Object.keys(mealTotals).forEach(key => {
+                    mealTotals[key] += parseFloat(nutrients[key] || 0);
+                });
+            });
+            
+            // Update meal total row
+            const mealSection = document.querySelector(`[data-meal="${mealName}"]`);
+            const totalRow = mealSection.querySelector('.meal-total');
+            if (totalRow) {
+                // Select the strong tags within the total row to update the values
+                const totalCells = totalRow.querySelectorAll('strong');
+                totalCells[0].textContent = mealTotals.energy.toFixed(2);
+                totalCells[1].textContent = mealTotals.protein.toFixed(3);
+                totalCells[2].textContent = mealTotals.fat.toFixed(3);
+                totalCells[3].textContent = mealTotals.calcium.toFixed(2);
+                totalCells[4].textContent = mealTotals.iron.toFixed(3);
+                totalCells[5].textContent = mealTotals.vita.toFixed(2);
+                totalCells[6].textContent = mealTotals.thiamine.toFixed(4);
+                totalCells[7].textContent = mealTotals.riboflavin.toFixed(4);
+                totalCells[8].textContent = mealTotals.niacin.toFixed(3);
+                totalCells[9].textContent = mealTotals.vitc.toFixed(2);
+            }
+        }
+
+        function updateTotals() {
+            let totals = {
+                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0, 
+                vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
+            };
+            
+            Object.entries(nutrientData).forEach(([mealName, ingredients]) => {
+                Object.entries(ingredients).forEach(([ingredient, data]) => {
+                    const nutrients = calculateNutrients(ingredient, data.amount);
+                    Object.keys(totals).forEach(key => {
+                        totals[key] += parseFloat(nutrients[key] || 0);
+                    });
+                });
+            });
+            
+            // Update total display
+            document.getElementById('total-energy').textContent = totals.energy.toFixed(2);
+            document.getElementById('total-protein').textContent = totals.protein.toFixed(3);
+            document.getElementById('total-fat').textContent = totals.fat.toFixed(3);
+            document.getElementById('total-calcium').textContent = totals.calcium.toFixed(2);
+            document.getElementById('total-iron').textContent = totals.iron.toFixed(3);
+            document.getElementById('total-vita').textContent = totals.vita.toFixed(2);
+            document.getElementById('total-thiamine').textContent = totals.thiamine.toFixed(4);
+            document.getElementById('total-riboflavin').textContent = totals.riboflavin.toFixed(4);
+            document.getElementById('total-niacin').textContent = totals.niacin.toFixed(3);
+            document.getElementById('total-vitc').textContent = totals.vitc.toFixed(2);
+            
+            // Update percentages and status
+            updatePercentagesAndStatus(totals);
+        }
+
+        function updatePercentagesAndStatus(totals) {
+            const nutrients = ['energy', 'protein', 'calcium', 'iron', 'vita', 'thiamine', 'riboflavin', 'niacin', 'vitc'];
+            
+            nutrients.forEach(nutrient => {
+                const rda = rdaValues[nutrient];
+                if (rda) {
+                    const percentage = (totals[nutrient] / rda * 100).toFixed(1);
+                    document.getElementById(`percent-${nutrient}`).textContent = percentage + '%';
+                    
+                    // Update status
+                    const statusElement = document.getElementById(`status-${nutrient}`);
+                    let status, className;
+                    
+                    if (percentage >= 80 && percentage <= 120) {
+                        status = 'Adequate';
+                        className = 'adequate';
+                    } else if (percentage < 80) {
+                        status = 'Deficient';
+                        className = 'deficient';
+                    } else {
+                        status = 'Excess';
+                        className = 'excess';
+                    }
+                    
+                    statusElement.textContent = status;
+                    statusElement.className = `status ${className}`;
+                } else if (nutrient === 'fat') { // Handle fat separately as it has no RDA in this data
+                    document.getElementById(`percent-${nutrient}`).textContent = '-';
+                    document.getElementById(`status-${nutrient}`).textContent = '-';
+                    document.getElementById(`status-${nutrient}`).className = `status`; // Clear any previous class
+                }
+            });
+        }
+
+        function initializeCalculator() {
+            const mealsContainer = document.getElementById('meals-container');
+            
+            Object.entries(nutrientData).forEach(([mealName, ingredients]) => {
+                const mealTable = createMealTable(mealName, ingredients);
+                mealsContainer.appendChild(mealTable);
+            });
+
+            // Add event listeners for input changes
+            mealsContainer.addEventListener('input', (event) => {
+                if (event.target.classList.contains('serving-input')) {
+                    const ingredient = event.target.dataset.ingredient;
+                    const mealName = event.target.dataset.meal;
+                    const newAmount = parseFloat(event.target.value);
+                    if (!isNaN(newAmount) && newAmount >= 0) {
+                        updateNutrientValues(ingredient, mealName, newAmount);
+                    } else if (event.target.value === '') { // Handle empty input gracefully
+                        updateNutrientValues(ingredient, mealName, 0); 
+                    }
+                }
+            });
+
+            // Initial calculation
+            updateTotals();
+        }
+
+        // Run the initialization function when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initializeCalculator);
+    </script>
+    </body>
+</html>
