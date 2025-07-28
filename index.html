@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Daily Nutrient Intake Calculator</title>
         <style>
+        /* Base styles for the body */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -13,6 +14,8 @@
             min-height: 100vh;
             box-sizing: border-box; /* Ensures padding doesn't add to total width */
         }
+
+        /* Styles for the main container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -21,6 +24,8 @@
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
+
+        /* Styling for the main heading */
         h1 {
             color: #2c3e50;
             text-align: center;
@@ -28,13 +33,17 @@
             font-size: 2.5em;
             font-weight: 300;
         }
+
+        /* Styling for each meal section */
         .meal-section {
             margin-bottom: 30px;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
-            overflow: hidden;
+            overflow: hidden; /* Ensures rounded corners apply to content */
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
+
+        /* Styling for meal headers */
         .meal-header {
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
@@ -44,39 +53,52 @@
             display: flex;
             align-items: center;
         }
+
+        /* Icon for meal headers */
         .meal-header::before {
-            content: "🍽️";
+            content: "🍽️"; /* Unicode for fork and knife */
             margin-right: 10px;
             font-size: 20px;
         }
-        /* Table responsiveness */
+
+        /* Wrapper for tables to enable horizontal scrolling on small screens */
         .table-wrapper {
-            overflow-x: auto; /* Enables horizontal scrolling for tables */
+            overflow-x: auto; /* Enables horizontal scrolling */
             -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         }
+
+        /* General table styling */
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            min-width: 800px; /* Ensure table has a minimum width to scroll */
+            min-width: 800px; /* Ensures table has a minimum width to scroll horizontally */
         }
+
+        /* Table header and data cell styling */
         th, td {
             padding: 12px 8px;
             text-align: center;
             border: 1px solid #e0e0e0;
             white-space: nowrap; /* Prevent text wrapping in table cells */
         }
+
+        /* Table header specific styling */
         th {
             background: linear-gradient(135deg, #ecf0f1, #d5dbdb);
             font-weight: 600;
             color: #2c3e50;
         }
+
+        /* Styling for ingredient names in the table */
         .ingredient-name {
             text-align: left;
             font-weight: 600;
             background-color: #f8f9fa;
             color: #2c3e50;
         }
+
+        /* Styling for serving input fields */
         .serving-input {
             width: 70px;
             padding: 6px;
@@ -84,112 +106,135 @@
             border-radius: 6px;
             text-align: center;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; /* Smooth transition for focus effect */
         }
+
+        /* Focus state for serving input fields */
         .serving-input:focus {
             outline: none;
             border-color: #2980b9;
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
+
+        /* Styling for total intake row */
         .total-row {
             background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white;
             font-weight: bold;
         }
+
+        /* Styling for RDA row */
         .rda-row {
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             font-weight: bold;
         }
+
+        /* Styling for percentage row */
         .percentage-row {
             background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
             font-weight: bold;
         }
+
+        /* Styling for the summary table */
         .summary-table {
             margin-top: 40px;
         }
+
+        /* Styling for nutrient status indicators */
         .status {
             padding: 6px 12px;
             border-radius: 20px;
             font-weight: bold;
             font-size: 12px;
         }
+
+        /* Status: Adequate */
         .adequate {
             background: linear-gradient(135deg, #d4edda, #c3e6cb);
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+
+        /* Status: Deficient */
         .deficient {
             background: linear-gradient(135deg, #f8d7da, #f1b0b7);
             color: #721c24;
             border: 1px solid #f1b0b7;
         }
+
+        /* Status: Excess */
         .excess {
             background: linear-gradient(135deg, #fff3cd, #ffeaa7);
             color: #856404;
             border: 1px solid #ffeaa7;
         }
+
+        /* Styling for meal total rows */
         .meal-total {
             background: linear-gradient(135deg, #8e44ad, #9b59b6);
             color: white;
             font-weight: bold;
         }
+
+        /* Styling for nutrient value cells */
         .nutrient-value {
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; /* Smooth transition for hover effect */
         }
+
+        /* Hover effect for nutrient value cells */
         .nutrient-value:hover {
             background-color: rgba(52, 152, 219, 0.1);
         }
 
-        /* Mobile adjustments */
+        /* Media queries for mobile responsiveness */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 10px; /* Reduce padding on smaller screens */
             }
             .container {
-                padding: 15px;
-                border-radius: 10px;
+                padding: 15px; /* Adjust container padding */
+                border-radius: 10px; /* Slightly smaller border-radius */
             }
             h1 {
-                font-size: 1.8em;
+                font-size: 1.8em; /* Smaller heading font size */
                 margin-bottom: 25px;
             }
             .meal-header {
-                font-size: 16px;
+                font-size: 16px; /* Smaller meal header font size */
                 padding: 10px 15px;
             }
             th, td {
-                padding: 8px 5px;
-                font-size: 11px;
+                padding: 8px 5px; /* Reduce table cell padding */
+                font-size: 11px; /* Smaller table font size */
             }
             .serving-input {
-                width: 60px;
+                width: 60px; /* Adjust input width */
                 padding: 4px;
                 font-size: 11px;
             }
             .status {
-                padding: 4px 8px;
-                font-size: 10px;
+                padding: 4px 8px; /* Adjust status badge padding */
+                font-size: 10px; /* Smaller status badge font size */
             }
         }
 
         @media (max-width: 480px) {
             h1 {
-                font-size: 1.5em;
+                font-size: 1.5em; /* Even smaller heading font size for very small screens */
                 margin-bottom: 20px;
             }
             .meal-header {
-                font-size: 14px;
+                font-size: 14px; /* Even smaller meal header font size */
                 padding: 8px 10px;
             }
-            /* Further reduce font size for very small screens if needed */
             th, td {
-                font-size: 10px;
+                font-size: 10px; /* Further reduce table font size */
                 padding: 6px 4px;
             }
             .serving-input {
-                width: 50px;
+                width: 50px; /* Further reduce input width */
                 font-size: 10px;
             }
         }
@@ -201,7 +246,8 @@
 
             <div id="meals-container"></div>
 
-            <div class="summary-table table-wrapper"> <table>
+            <div class="summary-table table-wrapper"> <!-- Added table-wrapper for summary table to enable scrolling -->
+                <table>
                     <thead>
                         <tr class="total-row">
                             <th>Summary</th>
@@ -276,20 +322,21 @@
         </div>
 
         <script>
+        // Recommended Daily Allowances (RDA) for various nutrients
         const rdaValues = {
             energy: 1660,
             protein: 46,
-            fat: null,
+            fat: null, // Fat has no specific RDA in this context
             calcium: 1000,
             iron: 29,
-            vita: 840,
-            thiamine: 1.4,
-            riboflavin: 1.9,
-            niacin: 11,
-            vitc: 67
+            vita: 840, // Vitamin A
+            thiamine: 1.4, // Vitamin B1
+            riboflavin: 1.9, // Vitamin B2
+            niacin: 11, // Vitamin B3
+            vitc: 67 // Vitamin C
         };
 
-        // Complete nutrient data with original values per 100g/100ml
+        // Complete nutrient data for various ingredients per 100g/100ml
         const originalNutrientData = {
             "Almond": { energy: 563, protein: 18.6, fat: 50.6, calcium: 234, iron: 4.6, vita: 0, thiamine: 0.24, riboflavin: 1.05, niacin: 3.9, vitc: 0 },
             "Milk": { energy: 67, protein: 3.2, fat: 4.1, calcium: 120, iron: 0.2, vita: 53, thiamine: 0.05, riboflavin: 0.19, niacin: 0.1, vitc: 2 },
@@ -319,6 +366,7 @@
             "Banana": { energy: 116, protein: 1.2, fat: 0.3, calcium: 17, iron: 0.36, vita: 19.5, thiamine: 0.05, riboflavin: 0.075, niacin: 0.5, vitc: 7 }
         };
 
+        // Initial nutrient data for each meal, with default amounts
         const nutrientData = {
             "Early Morning": {
                 "Almond": { amount: 15 },
@@ -373,11 +421,17 @@
             }
         };
 
+        /**
+         * Calculates the nutrient values for a given ingredient and amount.
+         * @param {string} ingredient - The name of the ingredient.
+         * @param {number} amount - The amount of the ingredient in grams/ml.
+         * @returns {object} An object containing calculated nutrient values.
+         */
         function calculateNutrients(ingredient, amount) {
             const baseData = originalNutrientData[ingredient];
-            if (!baseData) return {};
+            if (!baseData) return {}; // Return empty if ingredient not found
 
-            const ratio = amount / 100; // Convert to per 100g ratio
+            const ratio = amount / 100; // Calculate ratio based on 100g/100ml
             return {
                 energy: (baseData.energy * ratio).toFixed(2),
                 protein: (baseData.protein * ratio).toFixed(3),
@@ -392,10 +446,16 @@
             };
         }
 
+        /**
+         * Creates an HTML table for a specific meal, displaying ingredients and their nutrients.
+         * @param {string} mealName - The name of the meal (e.g., "Breakfast").
+         * @param {object} ingredients - An object containing ingredients and their amounts for the meal.
+         * @returns {HTMLElement} The created meal section div element.
+         */
         function createMealTable(mealName, ingredients) {
             const section = document.createElement('div');
             section.className = 'meal-section';
-            section.setAttribute('data-meal', mealName); // Add data attribute for easier selection
+            section.setAttribute('data-meal', mealName); // Data attribute for easy selection
 
             const header = document.createElement('div');
             header.className = 'meal-header';
@@ -432,10 +492,11 @@
                 vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
             };
 
+            // Populate table rows with ingredient data
             Object.entries(ingredients).forEach(([ingredient, data]) => {
                 const nutrients = calculateNutrients(ingredient, data.amount);
 
-                // Add to meal totals
+                // Add calculated nutrients to meal totals
                 Object.keys(mealTotals).forEach(key => {
                     mealTotals[key] += parseFloat(nutrients[key] || 0);
                 });
@@ -451,14 +512,14 @@
                     <td class="nutrient-value iron">${nutrients.iron}</td>
                     <td class="nutrient-value vita">${nutrients.vita}</td>
                     <td class="nutrient-value thiamine">${nutrients.thiamine}</td>
-                    <td class="nutrient-value riboflavin">${nututrients.riboflavin}</td>
+                    <td class="nutrient-value riboflavin">${nutrients.riboflavin}</td>
                     <td class="nutrient-value niacin">${nutrients.niacin}</td>
                     <td class="nutrient-value vitc">${nutrients.vitc}</td>
                 `;
                 tbody.appendChild(row);
             });
 
-            // Add meal total row
+            // Add a row for meal totals
             const totalRow = document.createElement('tr');
             totalRow.className = 'meal-total';
             totalRow.innerHTML = `
@@ -483,11 +544,18 @@
             return section;
         }
 
+        /**
+         * Updates the nutrient values for a specific ingredient in a meal based on new amount.
+         * Also triggers updates for meal totals and overall daily totals.
+         * @param {string} ingredient - The name of the ingredient.
+         * @param {string} mealName - The name of the meal.
+         * @param {number} newAmount - The new amount of the ingredient.
+         */
         function updateNutrientValues(ingredient, mealName, newAmount) {
             nutrientData[mealName][ingredient].amount = parseFloat(newAmount);
             const nutrients = calculateNutrients(ingredient, newAmount);
 
-            // Find and update the row
+            // Find the specific input and its corresponding row to update nutrient values
             const mealSection = document.querySelector(`[data-meal="${mealName}"]`);
             const input = mealSection.querySelector(`input[data-ingredient="${ingredient}"]`);
             if (input) {
@@ -505,10 +573,14 @@
                 cells[9].textContent = nutrients.vitc;
             }
 
-            updateMealTotal(mealName);
-            updateTotals();
+            updateMealTotal(mealName); // Update the total for the current meal
+            updateTotals(); // Update the overall daily totals
         }
 
+        /**
+         * Recalculates and updates the total nutrient values for a specific meal.
+         * @param {string} mealName - The name of the meal to update.
+         */
         function updateMealTotal(mealName) {
             const ingredients = nutrientData[mealName];
             let mealTotals = {
@@ -516,6 +588,7 @@
                 vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
             };
 
+            // Sum up nutrients for all ingredients in the meal
             Object.entries(ingredients).forEach(([ingredient, data]) => {
                 const nutrients = calculateNutrients(ingredient, data.amount);
                 Object.keys(mealTotals).forEach(key => {
@@ -523,12 +596,11 @@
                 });
             });
 
-            // Update meal total row
+            // Update the meal total row in the HTML
             const mealSection = document.querySelector(`[data-meal="${mealName}"]`);
             const totalRow = mealSection.querySelector('.meal-total');
             if (totalRow) {
-                // Select the strong tags within the total row to update the values
-                const totalCells = totalRow.querySelectorAll('strong');
+                const totalCells = totalRow.querySelectorAll('strong'); // Select strong tags for values
                 totalCells[0].textContent = mealTotals.energy.toFixed(2);
                 totalCells[1].textContent = mealTotals.protein.toFixed(3);
                 totalCells[2].textContent = mealTotals.fat.toFixed(3);
@@ -542,12 +614,17 @@
             }
         }
 
+        /**
+         * Calculates and updates the overall daily total nutrient intake.
+         * Also triggers the update for percentages and status.
+         */
         function updateTotals() {
             let totals = {
                 energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0,
                 vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
             };
 
+            // Iterate through all meals and ingredients to sum up total nutrients
             Object.entries(nutrientData).forEach(([mealName, ingredients]) => {
                 Object.entries(ingredients).forEach(([ingredient, data]) => {
                     const nutrients = calculateNutrients(ingredient, data.amount);
@@ -557,7 +634,7 @@
                 });
             });
 
-            // Update total display
+            // Update the total intake display in the summary table
             document.getElementById('total-energy').textContent = totals.energy.toFixed(2);
             document.getElementById('total-protein').textContent = totals.protein.toFixed(3);
             document.getElementById('total-fat').textContent = totals.fat.toFixed(3);
@@ -569,10 +646,14 @@
             document.getElementById('total-niacin').textContent = totals.niacin.toFixed(3);
             document.getElementById('total-vitc').textContent = totals.vitc.toFixed(2);
 
-            // Update percentages and status
+            // Update percentages and status based on new totals
             updatePercentagesAndStatus(totals);
         }
 
+        /**
+         * Updates the percentage of RDA and status for each nutrient.
+         * @param {object} totals - An object containing the current total nutrient intake.
+         */
         function updatePercentagesAndStatus(totals) {
             const nutrients = ['energy', 'protein', 'calcium', 'iron', 'vita', 'thiamine', 'riboflavin', 'niacin', 'vitc'];
 
@@ -582,7 +663,7 @@
                     const percentage = (totals[nutrient] / rda * 100).toFixed(1);
                     document.getElementById(`percent-${nutrient}`).textContent = percentage + '%';
 
-                    // Update status
+                    // Determine status (Adequate, Deficient, Excess)
                     const statusElement = document.getElementById(`status-${nutrient}`);
                     let status, className;
 
@@ -598,8 +679,8 @@
                     }
 
                     statusElement.textContent = status;
-                    statusElement.className = `status ${className}`;
-                } else if (nutrient === 'fat') { // Handle fat separately as it has no RDA in this data
+                    statusElement.className = `status ${className}`; // Apply appropriate class for styling
+                } else if (nutrient === 'fat') { // Special handling for fat as it has no RDA
                     document.getElementById(`percent-${nutrient}`).textContent = '-';
                     document.getElementById(`status-${nutrient}`).textContent = '-';
                     document.getElementById(`status-${nutrient}`).className = `status`; // Clear any previous class
@@ -607,15 +688,20 @@
             });
         }
 
+        /**
+         * Initializes the nutrient calculator by creating meal tables and setting up event listeners.
+         */
         function initializeCalculator() {
             const mealsContainer = document.getElementById('meals-container');
 
+            // Create and append meal tables to the container
             Object.entries(nutrientData).forEach(([mealName, ingredients]) => {
                 const mealTable = createMealTable(mealName, ingredients);
                 mealsContainer.appendChild(mealTable);
             });
 
-            // Add event listeners for input changes
+            // Add a single event listener to the meals container for input changes
+            // This uses event delegation for efficiency
             mealsContainer.addEventListener('input', (event) => {
                 if (event.target.classList.contains('serving-input')) {
                     const ingredient = event.target.dataset.ingredient;
@@ -623,13 +709,13 @@
                     const newAmount = parseFloat(event.target.value);
                     if (!isNaN(newAmount) && newAmount >= 0) {
                         updateNutrientValues(ingredient, mealName, newAmount);
-                    } else if (event.target.value === '') { // Handle empty input gracefully
+                    } else if (event.target.value === '') { // Handle empty input by treating it as 0
                         updateNutrientValues(ingredient, mealName, 0);
                     }
                 }
             });
 
-            // Initial calculation
+            // Perform initial calculation when the calculator is loaded
             updateTotals();
         }
 
