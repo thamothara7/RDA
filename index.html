@@ -11,6 +11,7 @@
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            box-sizing: border-box; /* Ensures padding doesn't add to total width */
         }
         .container {
             max-width: 1400px;
@@ -48,15 +49,22 @@
             margin-right: 10px;
             font-size: 20px;
         }
+        /* Table responsiveness */
+        .table-wrapper {
+            overflow-x: auto; /* Enables horizontal scrolling for tables */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            min-width: 800px; /* Ensure table has a minimum width to scroll */
         }
         th, td {
             padding: 12px 8px;
             text-align: center;
             border: 1px solid #e0e0e0;
+            white-space: nowrap; /* Prevent text wrapping in table cells */
         }
         th {
             background: linear-gradient(135deg, #ecf0f1, #d5dbdb);
@@ -107,18 +115,18 @@
             font-weight: bold;
             font-size: 12px;
         }
-        .adequate { 
-            background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+        .adequate {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        .deficient { 
-            background: linear-gradient(135deg, #f8d7da, #f1b0b7); 
+        .deficient {
+            background: linear-gradient(135deg, #f8d7da, #f1b0b7);
             color: #721c24;
             border: 1px solid #f1b0b7;
         }
-        .excess { 
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7); 
+        .excess {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
             color: #856404;
             border: 1px solid #ffeaa7;
         }
@@ -133,6 +141,58 @@
         .nutrient-value:hover {
             background-color: rgba(52, 152, 219, 0.1);
         }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 25px;
+            }
+            .meal-header {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+            th, td {
+                padding: 8px 5px;
+                font-size: 11px;
+            }
+            .serving-input {
+                width: 60px;
+                padding: 4px;
+                font-size: 11px;
+            }
+            .status {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            .meal-header {
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+            /* Further reduce font size for very small screens if needed */
+            th, td {
+                font-size: 10px;
+                padding: 6px 4px;
+            }
+            .serving-input {
+                width: 50px;
+                font-size: 10px;
+            }
+        }
     </style>
     </head>
     <body>
@@ -141,8 +201,7 @@
 
             <div id="meals-container"></div>
 
-            <div class="summary-table">
-                <table>
+            <div class="summary-table table-wrapper"> <table>
                     <thead>
                         <tr class="total-row">
                             <th>Summary</th>
@@ -317,7 +376,7 @@
         function calculateNutrients(ingredient, amount) {
             const baseData = originalNutrientData[ingredient];
             if (!baseData) return {};
-            
+
             const ratio = amount / 100; // Convert to per 100g ratio
             return {
                 energy: (baseData.energy * ratio).toFixed(2),
@@ -337,11 +396,14 @@
             const section = document.createElement('div');
             section.className = 'meal-section';
             section.setAttribute('data-meal', mealName); // Add data attribute for easier selection
-            
+
             const header = document.createElement('div');
             header.className = 'meal-header';
             header.textContent = mealName;
-            
+
+            const tableWrapper = document.createElement('div'); // Wrapper for table scrolling
+            tableWrapper.className = 'table-wrapper';
+
             const table = document.createElement('table');
             table.innerHTML = `
                 <thead>
@@ -362,22 +424,22 @@
                 </thead>
                 <tbody></tbody>
             `;
-            
+
             const tbody = table.querySelector('tbody');
-            
+
             let mealTotals = {
-                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0, 
+                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0,
                 vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
             };
-            
+
             Object.entries(ingredients).forEach(([ingredient, data]) => {
                 const nutrients = calculateNutrients(ingredient, data.amount);
-                
+
                 // Add to meal totals
                 Object.keys(mealTotals).forEach(key => {
                     mealTotals[key] += parseFloat(nutrients[key] || 0);
                 });
-                
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td class="ingredient-name">${ingredient}</td>
@@ -389,13 +451,13 @@
                     <td class="nutrient-value iron">${nutrients.iron}</td>
                     <td class="nutrient-value vita">${nutrients.vita}</td>
                     <td class="nutrient-value thiamine">${nutrients.thiamine}</td>
-                    <td class="nutrient-value riboflavin">${nutrients.riboflavin}</td>
+                    <td class="nutrient-value riboflavin">${nututrients.riboflavin}</td>
                     <td class="nutrient-value niacin">${nutrients.niacin}</td>
                     <td class="nutrient-value vitc">${nutrients.vitc}</td>
                 `;
                 tbody.appendChild(row);
             });
-            
+
             // Add meal total row
             const totalRow = document.createElement('tr');
             totalRow.className = 'meal-total';
@@ -414,18 +476,18 @@
                 <td><strong>${mealTotals.vitc.toFixed(2)}</strong></td>
             `;
             tbody.appendChild(totalRow);
-            
+
             section.appendChild(header);
-            section.appendChild(table);
+            tableWrapper.appendChild(table); // Append table to the wrapper
+            section.appendChild(tableWrapper); // Append wrapper to the section
             return section;
         }
 
         function updateNutrientValues(ingredient, mealName, newAmount) {
             nutrientData[mealName][ingredient].amount = parseFloat(newAmount);
             const nutrients = calculateNutrients(ingredient, newAmount);
-            
+
             // Find and update the row
-            // The previous querySelectorAll was too broad, now target specifically within the meal section
             const mealSection = document.querySelector(`[data-meal="${mealName}"]`);
             const input = mealSection.querySelector(`input[data-ingredient="${ingredient}"]`);
             if (input) {
@@ -442,7 +504,7 @@
                 cells[8].textContent = nutrients.niacin;
                 cells[9].textContent = nutrients.vitc;
             }
-            
+
             updateMealTotal(mealName);
             updateTotals();
         }
@@ -450,17 +512,17 @@
         function updateMealTotal(mealName) {
             const ingredients = nutrientData[mealName];
             let mealTotals = {
-                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0, 
+                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0,
                 vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
             };
-            
+
             Object.entries(ingredients).forEach(([ingredient, data]) => {
                 const nutrients = calculateNutrients(ingredient, data.amount);
                 Object.keys(mealTotals).forEach(key => {
                     mealTotals[key] += parseFloat(nutrients[key] || 0);
                 });
             });
-            
+
             // Update meal total row
             const mealSection = document.querySelector(`[data-meal="${mealName}"]`);
             const totalRow = mealSection.querySelector('.meal-total');
@@ -482,10 +544,10 @@
 
         function updateTotals() {
             let totals = {
-                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0, 
+                energy: 0, protein: 0, fat: 0, calcium: 0, iron: 0,
                 vita: 0, thiamine: 0, riboflavin: 0, niacin: 0, vitc: 0
             };
-            
+
             Object.entries(nutrientData).forEach(([mealName, ingredients]) => {
                 Object.entries(ingredients).forEach(([ingredient, data]) => {
                     const nutrients = calculateNutrients(ingredient, data.amount);
@@ -494,7 +556,7 @@
                     });
                 });
             });
-            
+
             // Update total display
             document.getElementById('total-energy').textContent = totals.energy.toFixed(2);
             document.getElementById('total-protein').textContent = totals.protein.toFixed(3);
@@ -506,24 +568,24 @@
             document.getElementById('total-riboflavin').textContent = totals.riboflavin.toFixed(4);
             document.getElementById('total-niacin').textContent = totals.niacin.toFixed(3);
             document.getElementById('total-vitc').textContent = totals.vitc.toFixed(2);
-            
+
             // Update percentages and status
             updatePercentagesAndStatus(totals);
         }
 
         function updatePercentagesAndStatus(totals) {
             const nutrients = ['energy', 'protein', 'calcium', 'iron', 'vita', 'thiamine', 'riboflavin', 'niacin', 'vitc'];
-            
+
             nutrients.forEach(nutrient => {
                 const rda = rdaValues[nutrient];
                 if (rda) {
                     const percentage = (totals[nutrient] / rda * 100).toFixed(1);
                     document.getElementById(`percent-${nutrient}`).textContent = percentage + '%';
-                    
+
                     // Update status
                     const statusElement = document.getElementById(`status-${nutrient}`);
                     let status, className;
-                    
+
                     if (percentage >= 80 && percentage <= 120) {
                         status = 'Adequate';
                         className = 'adequate';
@@ -534,7 +596,7 @@
                         status = 'Excess';
                         className = 'excess';
                     }
-                    
+
                     statusElement.textContent = status;
                     statusElement.className = `status ${className}`;
                 } else if (nutrient === 'fat') { // Handle fat separately as it has no RDA in this data
@@ -547,7 +609,7 @@
 
         function initializeCalculator() {
             const mealsContainer = document.getElementById('meals-container');
-            
+
             Object.entries(nutrientData).forEach(([mealName, ingredients]) => {
                 const mealTable = createMealTable(mealName, ingredients);
                 mealsContainer.appendChild(mealTable);
@@ -562,7 +624,7 @@
                     if (!isNaN(newAmount) && newAmount >= 0) {
                         updateNutrientValues(ingredient, mealName, newAmount);
                     } else if (event.target.value === '') { // Handle empty input gracefully
-                        updateNutrientValues(ingredient, mealName, 0); 
+                        updateNutrientValues(ingredient, mealName, 0);
                     }
                 }
             });
